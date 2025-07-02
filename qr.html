@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>QR Absen</title>
+  <meta charset="UTF-8" />
+  <title>QR Absen Pegawai</title>
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
   <style>
-    body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f4f4; }
-    canvas { margin-top: 20px; }
-    button { padding: 10px 20px; margin-top: 20px; }
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      padding-top: 50px;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    canvas {
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h2>🚀 QR Absen Pegawai</h2>
-  <canvas id="qrCanvas"></canvas>
+  <div id="qrcode"></div>
   <p><button onclick="logout()">🔒 Keluar</button></p>
 
   <script>
-    // Login check
+    // ⛔ Redirect ke login jika belum login
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "index.html";
     }
@@ -26,24 +41,21 @@
       window.location.href = "index.html";
     }
 
-    const qr = new QRious({
-      element: document.getElementById('qrCanvas'),
-      size: 250,
-      value: 'Loading...'
-    });
-
-    async function updateQR() {
-      try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycb.../exec'); // GANTI URL
-        const token = await res.text();
-        qr.value = `https://t.me/NAMA_BOT?start=${token}`; // GANTI NAMA_BOT
-      } catch (e) {
-        qr.value = 'Gagal ambil token';
-      }
-    }
-
-    updateQR();
-    setInterval(updateQR, 8000); // Perbarui token tiap 8 detik
+    // ✅ Ambil token dari Web App dan buat QR dinamis
+    fetch("https://script.google.com/macros/s/AKfycbw4JPZBzkbp25pdLAcUuXDXvsPLfvjEI9OKpO_pWsv5aYR7NvubgVRko6R8GTUe-3LWMw/exec")
+      .then(res => res.text())
+      .then(token => {
+        const url = `https://t.me/ABSEN_PTP_bot?start=${token}`;
+        new QRious({
+          element: document.getElementById('qrcode'),
+          size: 250,
+          value: url
+        });
+      })
+      .catch(err => {
+        document.getElementById('qrcode').innerHTML = `<p style="color:red">❌ Gagal memuat QR Code.</p>`;
+        console.error(err);
+      });
   </script>
 </body>
 </html>
