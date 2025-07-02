@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8">
   <title>QR Absen</title>
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
   <style>
-    body { text-align: center; font-family: sans-serif; padding-top: 50px; }
+    body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f4f4; }
     canvas { margin-top: 20px; }
+    button { padding: 10px 20px; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h2>Scan QR untuk Absen</h2>
-  <div id="qrcode"></div>
+  <h2>🚀 QR Absen Pegawai</h2>
+  <canvas id="qrCanvas"></canvas>
   <p><button onclick="logout()">🔒 Keluar</button></p>
 
   <script>
-    // Cek login
+    // Login check
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "index.html";
     }
@@ -24,16 +26,24 @@
       window.location.href = "index.html";
     }
 
-    // Ambil token dari Web Apps Script
-    fetch("https://script.google.com/macros/s/AKxxx.../exec") // Ganti dengan URL doGet kamu
-      .then(res => res.text())
-      .then(token => {
-        new QRious({
-          element: document.getElementById('qrcode'),
-          size: 250,
-          value: `https://t.me/NAMA_BOT?start=${token}`
-        });
-      });
+    const qr = new QRious({
+      element: document.getElementById('qrCanvas'),
+      size: 250,
+      value: 'Loading...'
+    });
+
+    async function updateQR() {
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycb.../exec'); // GANTI URL
+        const token = await res.text();
+        qr.value = `https://t.me/NAMA_BOT?start=${token}`; // GANTI NAMA_BOT
+      } catch (e) {
+        qr.value = 'Gagal ambil token';
+      }
+    }
+
+    updateQR();
+    setInterval(updateQR, 8000); // Perbarui token tiap 8 detik
   </script>
 </body>
 </html>
