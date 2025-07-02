@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Absen</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <style>
+    body { text-align: center; font-family: sans-serif; padding-top: 50px; }
+    canvas { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Scan QR untuk Absen</h2>
+  <div id="qrcode"></div>
+  <p><button onclick="logout()">🔒 Keluar</button></p>
+
+  <script>
+    // Cek login
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "index.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "index.html";
+    }
+
+    // Ambil token dari Web Apps Script
+    fetch("https://script.google.com/macros/s/AKxxx.../exec") // Ganti dengan URL doGet kamu
+      .then(res => res.text())
+      .then(token => {
+        new QRious({
+          element: document.getElementById('qrcode'),
+          size: 250,
+          value: `https://t.me/NAMA_BOT?start=${token}`
+        });
+      });
+  </script>
+</body>
+</html>
