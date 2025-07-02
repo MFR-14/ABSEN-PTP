@@ -1,37 +1,34 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>QR Absen Pegawai</title>
+  <meta charset="UTF-8">
+  <title>🚀 QR Absen Pegawai</title>
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
   <style>
     body {
       text-align: center;
       font-family: sans-serif;
-      padding-top: 50px;
       background-color: #f9f9f9;
-    }
-    h2 {
-      margin-bottom: 20px;
+      padding-top: 50px;
     }
     canvas {
-      margin-top: 10px;
+      margin-top: 20px;
     }
     button {
-      margin-top: 30px;
       padding: 10px 20px;
+      margin-top: 20px;
       font-size: 14px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h2>🚀 QR Absen Pegawai</h2>
-  <div id="qrcode"></div>
-  <p><button onclick="logout()">🔒 Keluar</button></p>
+  <h2>🚀 <strong>QR Absen Pegawai</strong></h2>
+  <canvas id="qrcode"></canvas>
+  <br>
+  <button onclick="logout()">🔒 Keluar</button>
 
   <script>
-    // ⛔ Redirect ke login jika belum login
+    // Jika belum login, arahkan ke halaman login
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "index.html";
     }
@@ -41,20 +38,25 @@
       window.location.href = "index.html";
     }
 
-    // ✅ Ambil token dari Web App dan buat QR dinamis
-    fetch("https://script.google.com/macros/s/AKfycbyCeRq0RPIW60Qiig7xkX-h9k06bpZHdNinGbpgtkNweBaoyrjnSkpQBTnFvn5ZH-F5Iw/exec")
-      .then(res => res.text())
+    // URL Web App untuk ambil token aktif
+    const endpoint = "https://script.google.com/macros/s/AKfycbyCeRq0RPIW60Qiig7xkX-h9k06bpZHdNinGbpgtkNweBaoyrjnSkpQBTnFvn5ZH-F5Iw/exec";
+
+    // Nama bot Telegram
+    const botUsername = "ABSEN_PTP_bot";
+
+    // Ambil token dan generate QR
+    fetch(endpoint)
+      .then(response => response.text())
       .then(token => {
-        const url = `https://t.me/ABSEN_PTP_bot?start=${token}`;
-        new QRious({
+        const qr = new QRious({
           element: document.getElementById('qrcode'),
           size: 250,
-          value: url
+          value: `https://t.me/${botUsername}?start=${token}`
         });
       })
       .catch(err => {
-        document.getElementById('qrcode').innerHTML = `<p style="color:red">❌ Gagal memuat QR Code.</p>`;
-        console.error(err);
+        alert("❌ Gagal memuat token QR");
+        console.error("Fetch error:", err);
       });
   </script>
 </body>
