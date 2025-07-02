@@ -2,33 +2,19 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>🚀 QR Absen Pegawai</title>
+  <title>QR Absen Pegawai</title>
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
   <style>
-    body {
-      text-align: center;
-      font-family: sans-serif;
-      background-color: #f9f9f9;
-      padding-top: 50px;
-    }
-    canvas {
-      margin-top: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      margin-top: 20px;
-      font-size: 14px;
-    }
+    body { text-align: center; font-family: sans-serif; padding-top: 50px; background: #f4f4f4; }
+    canvas { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h2>🚀 <strong>QR Absen Pegawai</strong></h2>
+  <h2>🚀 QR Absen Pegawai</h2>
   <canvas id="qrcode"></canvas>
-  <br>
-  <button onclick="logout()">🔒 Keluar</button>
+  <p><button onclick="logout()">🔒 Keluar</button></p>
 
   <script>
-    // Jika belum login, arahkan ke halaman login
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "index.html";
     }
@@ -38,25 +24,25 @@
       window.location.href = "index.html";
     }
 
-    // URL Web App untuk ambil token aktif
     const endpoint = "https://script.google.com/macros/s/AKfycbwnCbX0KQpQwSRvMjffztRno7nIL5bmNgGkzmG-83SE2qXERUUOHcNA_gVTwXhDhgO7xQ/exec";
-
-    // Nama bot Telegram
     const botUsername = "ABSEN_PTP_bot";
 
-    // Ambil token dan generate QR
     fetch(endpoint)
-      .then(response => response.text())
+      .then(res => res.text())
       .then(token => {
-        const qr = new QRious({
+        if (token === "NO_ACTIVE_TOKEN") {
+          alert("⚠️ Tidak ada token aktif!");
+          return;
+        }
+        new QRious({
           element: document.getElementById('qrcode'),
           size: 250,
           value: `https://t.me/${botUsername}?start=${token}`
         });
       })
       .catch(err => {
-        alert("❌ Gagal memuat token QR");
-        console.error("Fetch error:", err);
+        alert("❌ Gagal memuat token");
+        console.error(err);
       });
   </script>
 </body>
