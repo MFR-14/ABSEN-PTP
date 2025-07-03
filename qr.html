@@ -11,9 +11,7 @@
       background-color: #f4f4f4;
       padding-top: 50px;
     }
-    canvas {
-      margin-top: 20px;
-    }
+    canvas { margin-top: 20px; }
     button {
       margin-top: 30px;
       padding: 10px 20px;
@@ -33,9 +31,43 @@
   <p><button onclick="logout()">🔒 Keluar</button></p>
 
   <script>
-    // Cek login
-    if (localStorage.getItem("isLoggedIn") !== "true") {
-      window.location.href = "index.html";
+    const endpoint = "https://script.google.com/macros/s/AKfycbwEOJFxqeWQPzQHopxUVLzsJ7uJcWhmM2pubrksVmUelPiyM-InYpuU3qce5IgnKMN_nw/exec";
+    const botUsername = "ABSEN_PTP_bot";
+    const qrElement = document.getElementById("qrcode");
+    let currentToken = "";
+
+    // 🔁 Update token QR setiap 10 detik
+    function updateQR() {
+      fetch(endpoint)
+        .then(res => res.text())
+        .then(token => {
+          if (token === "NO_ACTIVE_TOKEN") {
+            console.warn("⚠️ Tidak ada token aktif.");
+            return;
+          }
+          if (token !== currentToken) {
+            currentToken = token;
+            new QRious({
+              element: qrElement,
+              size: 250,
+              value: `https://t.me/${botUsername}?start=${token}`
+            });
+            console.log("✅ Token QR diperbarui:", token);
+          }
+        })
+        .catch(err => {
+          console.error("❌ Gagal memuat token:", err);
+        });
+    }
+
+    // ⏰ Waktu real-time
+    function updateClock() {
+      const now = new Date();
+      const waktu = now.toLocaleString("id-ID", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+        hour: "2-digit", minute: "2-digit", second: "2-digit"
+      });
+      document.getElementById("clock").textContent = waktu;
     }
 
     function logout() {
@@ -43,46 +75,14 @@
       window.location.href = "index.html";
     }
 
-    const endpoint = "https://script.google.com/macros/s/AKfycbwEOJFxqeWQPzQHopxUVLzsJ7uJcWhmM2pubrksVmUelPiyM-InYpuU3qce5IgnKMN_nw/exec";
-    const botUsername = "ABSEN_PTP_bot";
-
-    fetch(endpoint)
-      .then(res => res.text())
-      .then(token => {
-        if (token === "NO_ACTIVE_TOKEN") {
-          alert("⚠️ Tidak ada token aktif!");
-          return;
-        }
-
-        new QRious({
-          element: document.getElementById("qrcode"),
-          size: 250,
-          value: `https://t.me/${botUsername}?start=${token}`
-        });
-
-        console.log("✅ Token aktif:", token);
-      })
-      .catch(err => {
-        alert("❌ Gagal memuat token");
-        console.error("Error fetch token:", err);
-      });
-
-    // ⏰ Waktu berjalan real-time
-    function updateClock() {
-      const now = new Date();
-      const waktu = now.toLocaleString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      document.getElementById("clock").textContent = waktu;
+    // 🟢 Jalankan
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "index.html";
     }
-    setInterval(updateClock, 1000);
+    updateQR();
+    setInterval(updateQR, 10000);  // refresh token tiap 10 detik
     updateClock();
+    setInterval(updateClock, 1000);
   </script>
 </body>
 </html>
