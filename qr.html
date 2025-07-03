@@ -60,6 +60,20 @@
         alert("❌ Gagal memuat token");
         console.error("Error fetch token:", err);
       });
+// Fungsi tampilkan waktu
+    function updateClock() {
+      const now = new Date();
+      const options = {
+        weekday: 'long', year: 'numeric', month: 'long',
+        day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      };
+      const formatter = new Intl.DateTimeFormat('id-ID', options);
+      document.getElementById("clock").textContent = `🕒 ${formatter.format(now)}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock(); // awal langsung tampil
   </script>
 </body>
 </html>
