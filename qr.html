@@ -19,15 +19,21 @@
       padding: 10px 20px;
       font-size: 16px;
     }
+    #clock {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #444;
+    }
   </style>
 </head>
 <body>
   <h2>📷 QR Absen Pegawai</h2>
   <canvas id="qrcode"></canvas>
+  <div id="clock">🕒 Memuat waktu...</div>
   <p><button onclick="logout()">🔒 Keluar</button></p>
 
   <script>
-    // Cek login (jika pakai auth lokal)
+    // Cek login
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "index.html";
     }
@@ -48,7 +54,7 @@
           return;
         }
 
-        const qr = new QRious({
+        new QRious({
           element: document.getElementById("qrcode"),
           size: 250,
           value: `https://t.me/${botUsername}?start=${token}`
@@ -60,7 +66,8 @@
         alert("❌ Gagal memuat token");
         console.error("Error fetch token:", err);
       });
-// Fungsi tampilkan waktu
+
+    // Fungsi tampilkan waktu
     function updateClock() {
       const now = new Date();
       const options = {
